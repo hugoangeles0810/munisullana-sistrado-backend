@@ -9,7 +9,7 @@ public class Tramite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(length = 10)
     private String codigo;
@@ -33,11 +33,11 @@ public class Tramite {
     @Lob
     private String indicaciones;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -10,29 +10,29 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @ManyToOne
-    @JoinColumn(name="roleid")
+    @JoinColumn(name="roleid", nullable = false)
     private Rol rol;
 
     @ManyToOne
-    @JoinColumn(name="oficinaid")
+    @JoinColumn(name="oficinaid", nullable = false)
     private OficinaUnidad oficina;
 
-    @Column
+    @Column(nullable = false)
     private String nombre;
 
-    @Column
+    @Column(nullable = false)
     private String apellidos;
 
-    @Column
+    @Column(nullable = false)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String clave;
 
-    @Column
+    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
 
@@ -40,11 +40,11 @@ public class Usuario {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaModificacion;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

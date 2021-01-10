@@ -8,7 +8,7 @@ public class Parametro {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(length = 4)
     private String codigo;
@@ -19,11 +19,11 @@ public class Parametro {
     @Column
     private String valor;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
