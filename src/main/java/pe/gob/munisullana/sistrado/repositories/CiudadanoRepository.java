@@ -7,4 +7,5 @@ import pe.gob.munisullana.sistrado.entities.Ciudadano;
 @Repository
 public interface CiudadanoRepository extends JpaRepository<Ciudadano, Integer> {
 
+    Ciudadano findByEmail(String email);
 }
