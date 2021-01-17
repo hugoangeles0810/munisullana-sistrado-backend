@@ -24,7 +24,10 @@ public class Usuario {
     private String nombre;
 
     @Column(nullable = false)
-    private String apellidos;
+    private String apePaterno;
+
+    @Column(nullable = false)
+    private String apeMaterno;
 
     @Column(nullable = false)
     private String email;
@@ -72,12 +75,20 @@ public class Usuario {
         this.nombre = nombre;
     }
 
-    public String getApellidos() {
-        return apellidos;
+    public String getApePaterno() {
+        return apePaterno;
     }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
+    public void setApePaterno(String apePaterno) {
+        this.apePaterno = apePaterno;
+    }
+
+    public String getApeMaterno() {
+        return apeMaterno;
+    }
+
+    public void setApeMaterno(String apeMaterno) {
+        this.apeMaterno = apeMaterno;
     }
 
     public String getEmail() {

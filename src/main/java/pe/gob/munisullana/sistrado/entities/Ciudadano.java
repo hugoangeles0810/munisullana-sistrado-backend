@@ -8,6 +8,10 @@ import java.util.Date;
 @Entity
 public class Ciudadano {
 
+    public enum Estado {
+        PENDIENTE,ACTIVO,BLOQUEADO;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -15,8 +19,11 @@ public class Ciudadano {
     @Column
     private String nombre;
 
-    @Column
-    private String apellidos;
+    @Column(nullable = false)
+    private String apePaterno;
+
+    @Column(nullable = false)
+    private String apeMaterno;
 
     @Column(unique = true)
     private String numeroDocumento;
@@ -31,12 +38,28 @@ public class Ciudadano {
     private String clave;
 
     @Column
+    private boolean representante;
+
+    @Column(length = 11, nullable = true)
+    private String ruc;
+
+    @Column(nullable = true)
+    private String razonSocial;
+
+    @Column(nullable = true)
+    private String dirFiscal;
+
+    @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaModificacion;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Estado estado;
 
     public Integer getId() {
         return id;
@@ -54,12 +77,20 @@ public class Ciudadano {
         this.nombre = nombre;
     }
 
-    public String getApellidos() {
-        return apellidos;
+    public String getApePaterno() {
+        return apePaterno;
     }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
+    public void setApePaterno(String apePaterno) {
+        this.apePaterno = apePaterno;
+    }
+
+    public String getApeMaterno() {
+        return apeMaterno;
+    }
+
+    public void setApeMaterno(String apeMaterno) {
+        this.apeMaterno = apeMaterno;
     }
 
     public String getNumeroDocumento() {
@@ -94,6 +125,38 @@ public class Ciudadano {
         this.clave = clave;
     }
 
+    public boolean isRepresentante() {
+        return representante;
+    }
+
+    public void setRepresentante(boolean representante) {
+        this.representante = representante;
+    }
+
+    public String getRuc() {
+        return ruc;
+    }
+
+    public void setRuc(String ruc) {
+        this.ruc = ruc;
+    }
+
+    public String getRazonSocial() {
+        return razonSocial;
+    }
+
+    public void setRazonSocial(String razonSocial) {
+        this.razonSocial = razonSocial;
+    }
+
+    public String getDirFiscal() {
+        return dirFiscal;
+    }
+
+    public void setDirFiscal(String dirFiscal) {
+        this.dirFiscal = dirFiscal;
+    }
+
     public Date getFechaCreacion() {
         return fechaCreacion;
     }
@@ -108,5 +171,13 @@ public class Ciudadano {
 
     public void setFechaModificacion(Date fechaModificacion) {
         this.fechaModificacion = fechaModificacion;
+    }
+
+    public Estado getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Estado estado) {
+        this.estado = estado;
     }
 }
