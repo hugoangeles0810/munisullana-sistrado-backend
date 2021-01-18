@@ -1,8 +1,7 @@
 package pe.gob.munisullana.sistrado.commands.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,10 +13,6 @@ import pe.gob.munisullana.sistrado.entities.UserType;
 import pe.gob.munisullana.sistrado.exceptions.DomainException;
 import pe.gob.munisullana.sistrado.repositories.CiudadanoRepository;
 import pe.gob.munisullana.sistrado.utils.JwtTokenUtil;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class LoginAccountCommandImpl implements LoginAccountCommand {
@@ -54,7 +49,8 @@ public class LoginAccountCommandImpl implements LoginAccountCommand {
             throw new DomainException("Usuario y/o contraseña incorrectos");
         }
 
-        final User user = new User(ciudadano.getEmail(), ciudadano.getClave(), getAuthorities(Arrays.asList(UserType.USER_APP.toString())));
+        final User user = new User(ciudadano.getEmail(), ciudadano.getClave(), AuthorityUtils
+                .commaSeparatedStringToAuthorityList(UserType.USER_APP.toString()));
 
         final String token = jwtTokenUtil.generateToken(user, UserType.USER_APP);
 
@@ -73,13 +69,5 @@ public class LoginAccountCommandImpl implements LoginAccountCommand {
         );
 
         return loginResponse;
-    }
-
-    private List<GrantedAuthority> getAuthorities (List<String> roles) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (String role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role));
-        }
-        return authorities;
     }
 }
