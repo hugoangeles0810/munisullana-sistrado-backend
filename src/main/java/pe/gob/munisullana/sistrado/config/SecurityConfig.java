@@ -39,7 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                     "/webapp/api/v1/ciudadano/login",
                     "/webapp/api/v1/ciudadano/registro",
-                    "/webapp/api/v1/ciudadano/verificar/*").permitAll()
+                    "/webapp/api/v1/ciudadano/verificar/*",
+                    "/common/api/v1/tramite/*").permitAll()
             .antMatchers("/**").authenticated()
             .and()
             .csrf().disable();;
