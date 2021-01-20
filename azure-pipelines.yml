@@ -4,12 +4,17 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
+<<<<<<< HEAD
 - main
+=======
+  - develop
+>>>>>>> develop
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+<<<<<<< HEAD
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
@@ -20,3 +25,26 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+=======
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      mavenOptions: '-Xmx3072m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.8'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: false
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'package'
+    env:
+      APPSETTING_DATABASE: $(DATABASE)
+  - task: CopyFiles@2
+    inputs:
+      contents: '**/*.jar'
+      targetFolder: '$(build.artifactStagingDirectory)'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      artifactName: 'jar'
+      pathToPublish: '$(build.artifactStagingDirectory)'
+>>>>>>> develop
