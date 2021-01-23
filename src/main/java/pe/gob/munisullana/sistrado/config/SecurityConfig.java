@@ -7,11 +7,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.security.SecureRandom;
 
 @Configuration
 @EnableWebSecurity
+@CrossOrigin(origins= "*")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] AUTH_WHITELIST = {
@@ -33,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+        http.cors().and()
             .authorizeRequests()
             .antMatchers(AUTH_WHITELIST).permitAll()
             .antMatchers(
@@ -43,6 +45,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/common/api/v1/tramite/*").permitAll()
             .antMatchers("/**").authenticated()
             .and()
-            .csrf().disable();;
+            .csrf().disable();
     }
 }
