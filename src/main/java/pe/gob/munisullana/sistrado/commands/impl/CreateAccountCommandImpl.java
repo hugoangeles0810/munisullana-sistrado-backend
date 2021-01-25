@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CreateAccountRequest;
 import pe.gob.munisullana.sistrado.entities.Ciudadano;
 import pe.gob.munisullana.sistrado.events.UserAppCreatedEvent;
+import pe.gob.munisullana.sistrado.exceptions.DomainException;
 import pe.gob.munisullana.sistrado.repositories.CiudadanoRepository;
 import pe.gob.munisullana.sistrado.commands.CreateAccountCommand;
 
@@ -32,8 +33,16 @@ public class CreateAccountCommandImpl implements CreateAccountCommand {
 
     @Override
     public void execute(CreateAccountRequest createAccountRequest) {
-        Ciudadano newCiudadano = new Ciudadano();
 
+        if (ciudadanoRepository.findByEmail(createAccountRequest.getEmail()) != null) {
+            throw new DomainException("Ya existe una cuenta registrada con este correo");
+        }
+
+        if (ciudadanoRepository.findByNumeroDocumento(createAccountRequest.getDni()) != null) {
+            throw new DomainException("Ya existe una cuenta registrada con este DNI");
+        }
+
+        Ciudadano newCiudadano = new Ciudadano();
         newCiudadano.setNombre(createAccountRequest.getNombres());
         newCiudadano.setApePaterno(createAccountRequest.getApePaterno());
         newCiudadano.setApeMaterno(createAccountRequest.getApeMaterno());

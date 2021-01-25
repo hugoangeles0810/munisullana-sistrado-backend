@@ -9,7 +9,7 @@ import java.util.Date;
 public class Solicitud {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Column(length = 15)

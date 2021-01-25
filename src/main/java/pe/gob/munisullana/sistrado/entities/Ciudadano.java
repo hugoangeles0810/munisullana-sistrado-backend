@@ -13,7 +13,7 @@ public class Ciudadano {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Column
@@ -31,7 +31,7 @@ public class Ciudadano {
     @Column(length = 15, nullable = true)
     private String telefono;
 
-    @Column
+    @Column(unique = true)
     private String email;
 
     @Column

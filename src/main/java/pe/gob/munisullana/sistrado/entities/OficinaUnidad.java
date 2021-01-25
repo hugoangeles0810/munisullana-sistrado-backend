@@ -8,7 +8,7 @@ import javax.persistence.*;
 public class OficinaUnidad {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(length = 6)

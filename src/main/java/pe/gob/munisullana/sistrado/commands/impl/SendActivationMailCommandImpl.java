@@ -1,6 +1,7 @@
 package pe.gob.munisullana.sistrado.commands.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pe.gob.munisullana.sistrado.entities.Ciudadano;
 import pe.gob.munisullana.sistrado.entities.VerificacionToken;
@@ -19,6 +20,9 @@ public class SendActivationMailCommandImpl implements SendActivationMailCommand 
     private VerificacionTokenRepository verificacionTokenRepository;
     private MailService mailService;
 
+    @Value("${sistrado.app.url}")
+    private String sistradoAppUrl;
+
     @Autowired
     public SendActivationMailCommandImpl(VerificacionTokenRepository verificacionTokenRepository, MailService mailService) {
         this.verificacionTokenRepository = verificacionTokenRepository;
@@ -30,10 +34,12 @@ public class SendActivationMailCommandImpl implements SendActivationMailCommand 
         String rawToken = UUID.randomUUID().toString();
         VerificacionToken verificacionToken = new VerificacionToken(rawToken, ciudadano, EXPIRATION_TIME_IN_MINUTES);
         verificacionTokenRepository.save(verificacionToken);
+
+        String url = sistradoAppUrl + "/activacion/" + verificacionToken.getToken();
         MailBody mailBody = new MailBody();
         mailBody.setEmail(ciudadano.getEmail());
         mailBody.setSubject("Activación de cuenta");
-        mailBody.setContent("Ingrese al siguiente link para activar su cuenta: " + verificacionToken.getToken());
+        mailBody.setContent("Ingrese al siguiente link para activar su cuenta: <a href=\"" + url + "\">" + url + "</a>");
         mailService.send(mailBody);
     }
 }
