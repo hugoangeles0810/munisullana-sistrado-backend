@@ -35,7 +35,7 @@ public class SendActivationMailCommandImpl implements SendActivationMailCommand 
         VerificacionToken verificacionToken = new VerificacionToken(rawToken, ciudadano, EXPIRATION_TIME_IN_MINUTES);
         verificacionTokenRepository.save(verificacionToken);
 
-        String url = sistradoAppUrl + "/activacion/" + verificacionToken.getToken();
+        String url = sistradoAppUrl + "/verificar/" + verificacionToken.getToken();
         MailBody mailBody = new MailBody();
         mailBody.setEmail(ciudadano.getEmail());
         mailBody.setSubject("Activación de cuenta");
