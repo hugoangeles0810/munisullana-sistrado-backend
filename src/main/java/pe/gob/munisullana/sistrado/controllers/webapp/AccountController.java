@@ -54,7 +54,7 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping(value = "/verificar/{token}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/verificar/{token}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Verificar cuenta")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Ok"),
