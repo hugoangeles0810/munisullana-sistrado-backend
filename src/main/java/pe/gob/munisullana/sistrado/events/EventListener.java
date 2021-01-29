@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
-import pe.gob.munisullana.sistrado.commands.SendActivationMailCommand;
+import pe.gob.munisullana.sistrado.services.CiudadanoService;
 
 @Component
 public class EventListener {
@@ -17,7 +17,7 @@ public class EventListener {
     private JavaMailSender sender;
 
     @Autowired
-    private SendActivationMailCommand sendActivationMailCommand;
+    private CiudadanoService ciudadanoService;
 
     @Subscribe
     public void onEvent(Event event) {
@@ -29,7 +29,7 @@ public class EventListener {
 
     private void handleEvent(UserAppCreatedEvent event) {
         log.info("event: " + event.getClass().getSimpleName());
-        sendActivationMailCommand.execute(event.getCiudadano());
+        ciudadanoService.sendActivationMail(event.getCiudadano());
     }
 
 }

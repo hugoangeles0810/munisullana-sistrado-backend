@@ -4,7 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import pe.gob.munisullana.sistrado.entities.Requisito;
 
+import java.util.List;
+
 @Repository
 public interface RequisitoRepository extends JpaRepository<Requisito, Integer> {
 
+    List<Requisito> findByTramiteId(Integer tramiteId);
 }

@@ -7,7 +7,8 @@ import javax.persistence.*;
 public class TramiteTipo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_tramitetipo_id", sequenceName = "seq_tramitetipo_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_tramitetipo_id")
     private Integer id;
 
     @Column(length = 10)

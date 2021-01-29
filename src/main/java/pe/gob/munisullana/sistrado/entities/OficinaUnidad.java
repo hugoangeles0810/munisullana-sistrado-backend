@@ -8,7 +8,8 @@ import javax.persistence.*;
 public class OficinaUnidad {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_oficinaunidad_id", sequenceName = "seq_oficinaunidad_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_oficinaunidad_id")
     private int id;
 
     @Column(length = 6)

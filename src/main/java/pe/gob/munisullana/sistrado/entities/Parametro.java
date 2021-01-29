@@ -7,7 +7,8 @@ import javax.persistence.*;
 public class Parametro {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_parametro_id", sequenceName = "seq_parametro_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_parametro_id")
     private Integer id;
 
     @Column(length = 4)

@@ -13,7 +13,8 @@ public class Ciudadano {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_ciudadano_id", sequenceName = "seq_ciudadano_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ciudadano_id")
     private Integer id;
 
     @Column

@@ -8,7 +8,8 @@ import javax.persistence.*;
 public class Requisito {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_requisito_id", sequenceName = "seq_requisito_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_requisito_id")
     private int id;
 
     @ManyToOne

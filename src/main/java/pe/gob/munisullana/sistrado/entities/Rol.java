@@ -8,7 +8,8 @@ import javax.persistence.*;
 public class Rol {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_rol_id", sequenceName = "seq_rol_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rol_id")
     private Integer id;
 
     @Column(length = 10)

@@ -10,7 +10,8 @@ import java.util.Date;
 public class VerificacionToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_verificaciontoken_id", sequenceName = "seq_verificaciontoken_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_verificaciontoken_id")
     private Long id;
 
     private String token;

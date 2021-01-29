@@ -8,8 +8,13 @@ import java.util.Date;
 @Entity
 public class Solicitud {
 
+    public enum Estado {
+        EN_TRAMITE, OBSERVADO, TERMINADO;
+    }
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_solicitud_id", sequenceName = "seq_solicitud_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_solicitud_id")
     private Integer id;
 
     @Column(length = 15)
@@ -23,8 +28,9 @@ public class Solicitud {
     @JoinColumn(name="ciudadanoid")
     private Ciudadano ciudadano;
 
-    @Column(length = 1)
-    private String estado;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Estado estado;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
@@ -66,11 +72,11 @@ public class Solicitud {
         this.ciudadano = ciudadano;
     }
 
-    public String getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 

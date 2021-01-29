@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pe.gob.munisullana.sistrado.commands.GetAllTramitesCommand;
+import pe.gob.munisullana.sistrado.services.TramiteService;
 import pe.gob.munisullana.sistrado.controllers.common.dto.TramiteItemResponse;
 
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class TramiteController {
 
     @Autowired
-    private GetAllTramitesCommand getAllTramitesCommand;
+    private TramiteService tramiteService;
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Listar trámites")
@@ -35,7 +35,7 @@ public class TramiteController {
     public ResponseEntity<List<TramiteItemResponse>> getAllTramites() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(
-                        getAllTramitesCommand.execute().stream()
+                        tramiteService.getAll().stream()
                                 .map(item -> new TramiteItemResponse(
                                         item.getId(),
                                         item.getCodigo(),

@@ -8,7 +8,8 @@ import java.util.Date;
 public class SolicitudAdjunto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_solicitudadjunto_id", sequenceName = "seq_solicitudadjunto_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_solicitudadjunto_id")
     private int id;
 
     @ManyToOne
@@ -25,6 +26,16 @@ public class SolicitudAdjunto {
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCarga;
+
+    public SolicitudAdjunto() {
+    }
+
+    public SolicitudAdjunto(Solicitud solicitud, Requisito requisito, String adjunto, Date fechaCarga) {
+        this.solicitud = solicitud;
+        this.requisito = requisito;
+        this.adjunto = adjunto;
+        this.fechaCarga = fechaCarga;
+    }
 
     public int getId() {
         return id;

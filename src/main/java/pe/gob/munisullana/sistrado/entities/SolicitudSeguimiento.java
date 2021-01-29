@@ -8,7 +8,8 @@ import javax.persistence.*;
 public class SolicitudSeguimiento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "seq_solicitudseguimiento_id", sequenceName = "seq_solicitudseguimiento_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_solicitudseguimiento_id")
     private int id;
 
     @ManyToOne
