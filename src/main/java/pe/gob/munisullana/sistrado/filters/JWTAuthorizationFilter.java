@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-@Order(Ordered.LOWEST_PRECEDENCE)
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     private static final String HEADER = "Authorization";
@@ -50,7 +49,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
                 Ciudadano ciudadano = ciudadanoRepository.findByEmail(username);
 
-                if (!ciudadano.getEstado().equals(Ciudadano.Estado.ACTIVO)) {
+                if (ciudadano == null || !ciudadano.getEstado().equals(Ciudadano.Estado.ACTIVO)) {
                     SecurityContextHolder.clearContext();
                 }
 

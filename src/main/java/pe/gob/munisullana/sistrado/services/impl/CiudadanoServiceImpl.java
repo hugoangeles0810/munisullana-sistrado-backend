@@ -3,6 +3,7 @@ package pe.gob.munisullana.sistrado.services.impl;
 import com.google.common.eventbus.EventBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,7 +51,7 @@ public class CiudadanoServiceImpl implements CiudadanoService {
     public CiudadanoServiceImpl(CiudadanoRepository ciudadanoRepository,
                                 VerificacionTokenRepository verificacionTokenRepository,
                                 PasswordEncoder passwordEncoder,
-                                EventBus eventBus,
+                                @Lazy EventBus eventBus,
                                 JwtTokenUtil jwtTokenUtil,
                                 MailService mailService) {
         this.ciudadanoRepository = ciudadanoRepository;

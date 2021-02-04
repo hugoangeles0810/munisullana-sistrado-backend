@@ -8,16 +8,15 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import pe.gob.munisullana.sistrado.services.CiudadanoService;
 
-@Component
 public class EventListener {
 
     public static final Logger log = LoggerFactory.getLogger(EventListener.class);
 
-    @Autowired
-    private JavaMailSender sender;
-
-    @Autowired
     private CiudadanoService ciudadanoService;
+
+    public EventListener(CiudadanoService ciudadanoService) {
+        this.ciudadanoService = ciudadanoService;
+    }
 
     @Subscribe
     public void onEvent(Event event) {
