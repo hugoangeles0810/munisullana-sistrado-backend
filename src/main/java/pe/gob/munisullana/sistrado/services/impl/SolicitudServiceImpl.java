@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudResponse;
+import pe.gob.munisullana.sistrado.controllers.webapp.dto.ProcedureItemResponse;
 import pe.gob.munisullana.sistrado.entities.*;
 import pe.gob.munisullana.sistrado.exceptions.DomainException;
 import pe.gob.munisullana.sistrado.repositories.*;
@@ -13,6 +14,7 @@ import pe.gob.munisullana.sistrado.services.SolicitudService;
 import pe.gob.munisullana.sistrado.utils.TimeProvider;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -81,6 +83,21 @@ public class SolicitudServiceImpl implements SolicitudService  {
 
 
         return new CrearSolicitudResponse(solicitud.getNumero(), solicitud.getEstado());
+    }
+
+    @Override
+    public List<ProcedureItemResponse> getMyProcedures() {
+        List<ProcedureItemResponse> procedureItemsResponse = solicitudRepository.findAllByCiudadano_EmailOrderByIdDesc(getUserLogged().getPrincipal().toString()).stream()
+                .map(solicitud -> new ProcedureItemResponse(
+                        solicitud.getId(),
+                        solicitud.getNumero(),
+                        solicitud.getTramite().getNombre(),
+                        solicitud.getEstado().toString(),
+                        "",
+                        null
+                )).collect(Collectors.toList());
+
+        return procedureItemsResponse;
     }
 
     private boolean hasCompleteWholeRequirements(List<CrearSolicitudRequest.RequisitoItem> requestRequisitos, List<Requisito> requisitos) {

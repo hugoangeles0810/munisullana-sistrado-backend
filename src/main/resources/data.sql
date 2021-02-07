@@ -15,4 +15,12 @@ VALUES (NEXT VALUE FOR seq_tramite_id, 'T000000001', 'Tramite 1', 1, 1, 'Descrip
 INSERT INTO requisito (id, tramiteid, nombre, descripcion, indicaciones, tipo_adjunto)
 VALUES (NEXT VALUE FOR seq_tramite_id, 1, 'Requisito 1', 'Descripcion 1', 'Indicacion 1', 'pdf');
 
+-- Solicitud
+
+INSERT INTO solicitud (id, estado, fecha_creacion, fecha_modificacion, numero, ciudadanoid, tramiteid)
+VALUES (NEXT VALUE FOR seq_solicitud_id, 'EN_TRAMITE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'S0000001', 1, 1);
+
+INSERT INTO solicitud_adjunto(id, adjunto, fecha_carga, requisitoid, solicitudid)
+VALUES (NEXT VALUE FOR seq_solicitudadjunto_id, 'https://internetpasoapaso.com/wp-content/uploads/Archivo-extension-DOC.jpg', CURRENT_TIMESTAMP, 1, 1);
+
 
