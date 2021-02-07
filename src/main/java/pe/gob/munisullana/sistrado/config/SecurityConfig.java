@@ -48,7 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/webapp/api/v1/ciudadano/login",
                     "/webapp/api/v1/ciudadano/registro",
                     "/webapp/api/v1/ciudadano/verificar/*",
-                    "/common/api/v1/tramite/*").permitAll()
+                    "/common/api/v1/tramite/*",
+                    "/backoffice/api/v1/usuario/login").permitAll()
             .antMatchers("/**").authenticated()
             .and()
             .addFilterBefore(jwtAuthorizationFilter, BasicAuthenticationFilter.class)

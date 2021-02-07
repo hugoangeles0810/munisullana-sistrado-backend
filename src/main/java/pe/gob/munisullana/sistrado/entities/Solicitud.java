@@ -9,7 +9,7 @@ import java.util.Date;
 public class Solicitud {
 
     public enum Estado {
-        EN_TRAMITE, OBSERVADO, TERMINADO;
+        RECIBIDO, EN_TRAMITE, OBSERVADO, APROBADO, FINALIZADO;
     }
 
     @Id

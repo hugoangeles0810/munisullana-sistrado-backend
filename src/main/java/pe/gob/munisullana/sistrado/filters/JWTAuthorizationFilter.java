@@ -6,8 +6,6 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import pe.gob.munisullana.sistrado.entities.Ciudadano;
 import pe.gob.munisullana.sistrado.entities.UserType;
+import pe.gob.munisullana.sistrado.entities.Usuario;
 import pe.gob.munisullana.sistrado.repositories.CiudadanoRepository;
+import pe.gob.munisullana.sistrado.repositories.UsuarioRepository;
 import pe.gob.munisullana.sistrado.utils.JwtTokenUtil;
 
 import javax.servlet.FilterChain;
@@ -39,6 +39,9 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private CiudadanoRepository ciudadanoRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
@@ -46,22 +49,39 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             if (hasJWTToken(request, response)) {
                 String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
                 String username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+                UserType userType = UserType.valueOf(jwtTokenUtil.getClaimFromToken(jwtToken, claims -> claims.get(JwtTokenUtil.CLAIM_USER_TYPE, String.class)));
 
-                Ciudadano ciudadano = ciudadanoRepository.findByEmail(username);
+                log.info("UserType: " + userType);
 
-                if (ciudadano == null || !ciudadano.getEstado().equals(Ciudadano.Estado.ACTIVO)) {
-                    SecurityContextHolder.clearContext();
+
+                if (userType == UserType.USER_APP) {
+                    Ciudadano ciudadano = ciudadanoRepository.findByEmail(username);
+
+                    if (ciudadano == null || !ciudadano.getEstado().equals(Ciudadano.Estado.ACTIVO)) {
+                        SecurityContextHolder.clearContext();
+                        chain.doFilter(request, response);
+                        return;
+                    }
+                } else {
+                    Usuario usuario = usuarioRepository.findByEmail(username);
+
+                    if (usuario == null) {
+                        SecurityContextHolder.clearContext();
+                        chain.doFilter(request, response);
+                        return;
+                    }
                 }
 
-                User user = new User(ciudadano.getEmail(), ciudadano.getClave(), AuthorityUtils
-                        .commaSeparatedStringToAuthorityList(UserType.USER_APP.toString()));
+                User user = new User(username, "", AuthorityUtils
+                        .commaSeparatedStringToAuthorityList(userType.toString()));
+
 
                 if (jwtTokenUtil.validateToken(jwtToken, user)) {
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            ciudadano.getEmail(),
-                            null,
+                            username,
+                            "",
                             AuthorityUtils
-                                    .commaSeparatedStringToAuthorityList(UserType.USER_APP.toString()));
+                                    .commaSeparatedStringToAuthorityList(userType.toString()));
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 } else {
                     SecurityContextHolder.clearContext();

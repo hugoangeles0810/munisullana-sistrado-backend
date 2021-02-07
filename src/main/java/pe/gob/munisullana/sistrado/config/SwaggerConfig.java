@@ -20,6 +20,7 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.ant("/webapp/api/**")
+                        .or(PathSelectors.ant("/backoffice/api/**"))
                         .or(PathSelectors.ant("/common/api/**"))
                 )
                 .build()

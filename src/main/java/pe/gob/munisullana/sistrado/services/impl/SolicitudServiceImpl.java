@@ -61,7 +61,7 @@ public class SolicitudServiceImpl implements SolicitudService  {
         }
 
         Solicitud solicitud = new Solicitud();
-        solicitud.setEstado(Solicitud.Estado.EN_TRAMITE);
+        solicitud.setEstado(Solicitud.Estado.RECIBIDO);
         solicitud.setCiudadano(ciudadano);
         solicitud.setFechaCreacion(timeProvider.now());
         solicitud.setNumero(generateRequestNumber());

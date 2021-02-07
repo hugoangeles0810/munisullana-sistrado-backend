@@ -15,6 +15,10 @@ VALUES (NEXT VALUE FOR seq_tramite_id, 'T000000001', 'Tramite 1', 1, 1, 'Descrip
 INSERT INTO requisito (id, tramiteid, nombre, descripcion, indicaciones, tipo_adjunto)
 VALUES (NEXT VALUE FOR seq_tramite_id, 1, 'Requisito 1', 'Descripcion 1', 'Indicacion 1', 'pdf');
 
+-- Usuario del sistema
+INSERT INTO usuario(id, nombre, ape_paterno, ape_materno, email, clave, fecha_creacion, fecha_modificacion, oficinaid, roleid)
+VALUES (NEXT VALUE FOR seq_usuario_id, 'Victor', 'Angeles', 'Chavez', 'hugoangeles0810@gmail.com', '$2a$10$97qOqX8CEQbvdAVUao5E5.iWJNjKwtlvYBjhdWpbD7Q2e0dFi0UUa', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1);
+
 -- Solicitud
 
 INSERT INTO solicitud (id, estado, fecha_creacion, fecha_modificacion, numero, ciudadanoid, tramiteid)
