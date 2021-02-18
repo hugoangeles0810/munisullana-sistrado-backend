@@ -2,6 +2,7 @@ package pe.gob.munisullana.sistrado.entities;
 
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Table
 @Entity
@@ -10,7 +11,7 @@ public class SolicitudSeguimiento {
     @Id
     @SequenceGenerator(name = "seq_solicitudseguimiento_id", sequenceName = "seq_solicitudseguimiento_id", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_solicitudseguimiento_id")
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name="solicitudid")
@@ -26,11 +27,15 @@ public class SolicitudSeguimiento {
     @JoinColumn(name="usuarioid", nullable = true)
     private Usuario usuarioModificacion;
 
-    public int getId() {
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaCreacion;
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -64,5 +69,13 @@ public class SolicitudSeguimiento {
 
     public void setUsuarioModificacion(Usuario usuarioModificacion) {
         this.usuarioModificacion = usuarioModificacion;
+    }
+
+    public Date getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
     }
 }

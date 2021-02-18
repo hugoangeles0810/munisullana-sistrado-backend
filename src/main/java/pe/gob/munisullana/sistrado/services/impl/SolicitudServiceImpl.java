@@ -1,14 +1,17 @@
 package pe.gob.munisullana.sistrado.services.impl;
 
+import com.google.common.eventbus.EventBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import pe.gob.munisullana.sistrado.controllers.backoffice.dto.ObservarSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.common.dto.ProcedureDetailResponse;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudResponse;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.ProcedureItemResponse;
 import pe.gob.munisullana.sistrado.entities.*;
+import pe.gob.munisullana.sistrado.events.SolicitudUpdtedEvent;
 import pe.gob.munisullana.sistrado.exceptions.DomainException;
 import pe.gob.munisullana.sistrado.repositories.*;
 import pe.gob.munisullana.sistrado.services.SolicitudService;
@@ -28,8 +31,10 @@ public class SolicitudServiceImpl implements SolicitudService  {
     private UsuarioRepository usuarioRepository;
     private SolicitudRepository solicitudRepository;
     private SolicitudAdjuntoRepository solicitudAdjuntoRepository;
+    private SolicitudSeguimientoRepository solicitudSeguimientoRepository;
     private TramiteRepository tramiteRepository;
     private RequisitoRepository requisitoRepository;
+    private final EventBus eventBus;
     private TimeProvider timeProvider;
     private TextFormat textFormat;
 
@@ -38,16 +43,20 @@ public class SolicitudServiceImpl implements SolicitudService  {
                                 UsuarioRepository usuarioRepository,
                                 SolicitudRepository solicitudRepository,
                                 SolicitudAdjuntoRepository solicitudAdjuntoRepository,
+                                SolicitudSeguimientoRepository solicitudSeguimientoRepository,
                                 TramiteRepository tramiteRepository,
                                 RequisitoRepository requisitoRepository,
+                                EventBus eventBus,
                                 TimeProvider timeProvider,
                                 TextFormat textFormat) {
         this.ciudadanoRepository = ciudadanoRepository;
         this.usuarioRepository = usuarioRepository;
         this.solicitudRepository = solicitudRepository;
         this.solicitudAdjuntoRepository = solicitudAdjuntoRepository;
+        this.solicitudSeguimientoRepository = solicitudSeguimientoRepository;
         this.tramiteRepository = tramiteRepository;
         this.requisitoRepository = requisitoRepository;
+        this.eventBus = eventBus;
         this.timeProvider = timeProvider;
         this.textFormat = textFormat;
     }
@@ -149,6 +158,35 @@ public class SolicitudServiceImpl implements SolicitudService  {
                         adjunto.getRequisito().getIndicaciones()
                 )).collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public void observarSolicitud(ObservarSolicitudRequest request) {
+        Optional<Solicitud> solicitudOptional = solicitudRepository.findById(request.getTramiteId());
+
+        if (!solicitudOptional.isPresent()) {
+            throw new DomainException("Trámite no registrado");
+        }
+
+        Solicitud solicitud = solicitudOptional.get();
+        Usuario usuario = usuarioRepository.findByEmail(getUserLogged().getPrincipal().toString());
+
+        solicitud.setEstado(Solicitud.Estado.OBSERVADO);
+        solicitud.setFechaModificacion(timeProvider.now());
+
+
+        solicitudRepository.save(solicitud);
+
+        SolicitudSeguimiento solicitudSeguimiento = new SolicitudSeguimiento();
+        solicitudSeguimiento.setSolicitud(solicitud);
+        solicitudSeguimiento.setEstado(Solicitud.Estado.OBSERVADO.toString());
+        solicitudSeguimiento.setDetalle(request.getObservaciones());
+        solicitudSeguimiento.setUsuarioModificacion(usuario);
+        solicitudSeguimiento.setFechaCreacion(timeProvider.now());
+
+        solicitudSeguimientoRepository.save(solicitudSeguimiento);
+
+        eventBus.post(new SolicitudUpdtedEvent(solicitudSeguimiento));
     }
 
     private boolean hasCompleteWholeRequirements(List<CrearSolicitudRequest.RequisitoItem> requestRequisitos, List<Requisito> requisitos) {

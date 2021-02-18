@@ -123,4 +123,8 @@ public class Usuario {
     public void setFechaModificacion(Date fechaModificacion) {
         this.fechaModificacion = fechaModificacion;
     }
+
+    public String getNombreCompleto() {
+        return nombre + " " + apePaterno + " " + apeMaterno;
+    }
 }
