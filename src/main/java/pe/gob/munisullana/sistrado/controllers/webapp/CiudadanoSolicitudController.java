@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("webapp/api/v1/solicitud")
-public class SolicitudController {
+public class CiudadanoSolicitudController {
 
     @Autowired
     private SolicitudService solicitudService;
@@ -59,6 +59,6 @@ public class SolicitudController {
             @ApiResponse(code = 400, message = "Bad request")
     })
     public ResponseEntity<List<ProcedureItemResponse>> getMyProcedures() {
-        return ResponseEntity.status(HttpStatus.OK).body(solicitudService.getMyProcedures());
+        return ResponseEntity.status(HttpStatus.OK).body(solicitudService.getLoggedCiudadanoProcedures());
     }
 }

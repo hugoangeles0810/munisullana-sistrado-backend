@@ -1,5 +1,6 @@
 package pe.gob.munisullana.sistrado.services;
 
+import pe.gob.munisullana.sistrado.controllers.common.dto.ProcedureDetailResponse;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudResponse;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.ProcedureItemResponse;
@@ -10,5 +11,9 @@ public interface SolicitudService {
 
     CrearSolicitudResponse save(CrearSolicitudRequest request);
 
-    List<ProcedureItemResponse> getMyProcedures();
+    List<ProcedureItemResponse> getLoggedCiudadanoProcedures();
+
+    List<ProcedureItemResponse> getLoggedBackofficeProcedures();
+
+    ProcedureDetailResponse getProcedureDetail(Integer id);
 }

@@ -1,6 +1,7 @@
 package pe.gob.munisullana.sistrado.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pe.gob.munisullana.sistrado.entities.Solicitud;
 
@@ -10,4 +11,7 @@ import java.util.List;
 public interface SolicitudRepository extends JpaRepository<Solicitud, Integer> {
 
     List<Solicitud> findAllByCiudadano_EmailOrderByIdDesc(String email);
+
+    @Query("SELECT s FROM Solicitud s JOIN s.tramite t JOIN t.oficina o WHERE o.id = :id")
+    List<Solicitud> findAllByTramite_Oficina_IdOrderByIdDesc(int id);
 }

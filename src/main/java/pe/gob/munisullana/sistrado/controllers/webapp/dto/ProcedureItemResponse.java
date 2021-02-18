@@ -6,7 +6,11 @@ public class ProcedureItemResponse {
 
     private String numero;
 
+    private String ciudadano;
+
     private String tramite;
+
+    private String tipo;
 
     private String estado;
 
@@ -17,10 +21,12 @@ public class ProcedureItemResponse {
     public ProcedureItemResponse() {
     }
 
-    public ProcedureItemResponse(Integer id, String numero, String tramite, String estado, String fechaCreacion, String fechaModificacion) {
+    public ProcedureItemResponse(Integer id, String numero, String ciudadano, String tramite, String tipo, String estado, String fechaCreacion, String fechaModificacion) {
         this.id = id;
         this.numero = numero;
+        this.ciudadano = ciudadano;
         this.tramite = tramite;
+        this.tipo = tipo;
         this.estado = estado;
         this.fechaCreacion = fechaCreacion;
         this.fechaModificacion = fechaModificacion;
@@ -34,8 +40,16 @@ public class ProcedureItemResponse {
         return numero;
     }
 
+    public String getCiudadano() {
+        return ciudadano;
+    }
+
     public String getTramite() {
         return tramite;
+    }
+
+    public String getTipo() {
+        return tipo;
     }
 
     public String getEstado() {

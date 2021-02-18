@@ -181,4 +181,8 @@ public class Ciudadano {
     public void setEstado(Estado estado) {
         this.estado = estado;
     }
+
+    public String getNombreCompleto() {
+        return nombre + " " + apePaterno + " " + apeMaterno;
+    }
 }

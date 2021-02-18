@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import pe.gob.munisullana.sistrado.controllers.common.dto.ProcedureDetailResponse;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudResponse;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.ProcedureItemResponse;
@@ -11,10 +12,10 @@ import pe.gob.munisullana.sistrado.entities.*;
 import pe.gob.munisullana.sistrado.exceptions.DomainException;
 import pe.gob.munisullana.sistrado.repositories.*;
 import pe.gob.munisullana.sistrado.services.SolicitudService;
+import pe.gob.munisullana.sistrado.utils.TextFormat;
 import pe.gob.munisullana.sistrado.utils.TimeProvider;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -24,25 +25,44 @@ import java.util.stream.Collectors;
 public class SolicitudServiceImpl implements SolicitudService  {
 
     private CiudadanoRepository ciudadanoRepository;
+    private UsuarioRepository usuarioRepository;
     private SolicitudRepository solicitudRepository;
     private SolicitudAdjuntoRepository solicitudAdjuntoRepository;
     private TramiteRepository tramiteRepository;
     private RequisitoRepository requisitoRepository;
     private TimeProvider timeProvider;
+    private TextFormat textFormat;
 
     @Autowired
     public SolicitudServiceImpl(CiudadanoRepository ciudadanoRepository,
+                                UsuarioRepository usuarioRepository,
                                 SolicitudRepository solicitudRepository,
                                 SolicitudAdjuntoRepository solicitudAdjuntoRepository,
                                 TramiteRepository tramiteRepository,
                                 RequisitoRepository requisitoRepository,
-                                TimeProvider timeProvider) {
+                                TimeProvider timeProvider,
+                                TextFormat textFormat) {
         this.ciudadanoRepository = ciudadanoRepository;
+        this.usuarioRepository = usuarioRepository;
         this.solicitudRepository = solicitudRepository;
         this.solicitudAdjuntoRepository = solicitudAdjuntoRepository;
         this.tramiteRepository = tramiteRepository;
         this.requisitoRepository = requisitoRepository;
         this.timeProvider = timeProvider;
+        this.textFormat = textFormat;
+    }
+
+    private ProcedureItemResponse mapToProcedureItemResponse(Solicitud solicitud) {
+        return new ProcedureItemResponse(
+                solicitud.getId(),
+                solicitud.getNumero(),
+                solicitud.getCiudadano().getNombreCompleto(),
+                solicitud.getTramite().getNombre(),
+                "TUPA",
+                solicitud.getEstado().toString(),
+                textFormat.formatProcedureDate(solicitud.getFechaCreacion()),
+                textFormat.formatProcedureDate(solicitud.getFechaModificacion())
+        );
     }
 
     @Transactional
@@ -86,18 +106,49 @@ public class SolicitudServiceImpl implements SolicitudService  {
     }
 
     @Override
-    public List<ProcedureItemResponse> getMyProcedures() {
+    public List<ProcedureItemResponse> getLoggedCiudadanoProcedures() {
         List<ProcedureItemResponse> procedureItemsResponse = solicitudRepository.findAllByCiudadano_EmailOrderByIdDesc(getUserLogged().getPrincipal().toString()).stream()
-                .map(solicitud -> new ProcedureItemResponse(
-                        solicitud.getId(),
-                        solicitud.getNumero(),
-                        solicitud.getTramite().getNombre(),
-                        solicitud.getEstado().toString(),
-                        "",
-                        null
-                )).collect(Collectors.toList());
+                .map(this::mapToProcedureItemResponse).collect(Collectors.toList());
 
         return procedureItemsResponse;
+    }
+
+    @Override
+    public List<ProcedureItemResponse> getLoggedBackofficeProcedures() {
+        Usuario usuario = usuarioRepository.findByEmail(getUserLogged().getPrincipal().toString());
+        List<ProcedureItemResponse> procedureItemsResponse = solicitudRepository.findAllByTramite_Oficina_IdOrderByIdDesc(usuario.getOficina().getId()).stream()
+                .map(this::mapToProcedureItemResponse).collect(Collectors.toList());
+        return procedureItemsResponse;
+    }
+
+    @Override
+    public ProcedureDetailResponse getProcedureDetail(Integer id) {
+        Optional<Solicitud> holder = solicitudRepository.findById(id);
+
+        if (!holder.isPresent()) return null;
+
+        Solicitud solicitud = holder.get();
+        List<SolicitudAdjunto> adjuntos = solicitudAdjuntoRepository.findAllBySolicitud_IdOrderByRequisito_IdDesc(id);
+
+        return new ProcedureDetailResponse(
+                id,
+                solicitud.getNumero(),
+                solicitud.getCiudadano().getNombreCompleto(),
+                solicitud.getTramite().getNombre(),
+                "Tupa",
+                solicitud.getEstado().toString(),
+                textFormat.formatProcedureDate(solicitud.getFechaCreacion()),
+                textFormat.formatProcedureDate(solicitud.getFechaModificacion()),
+                adjuntos.stream().map(adjunto -> new ProcedureDetailResponse.RequisitoAdjuntoItemResponse(
+                        adjunto.getId(),
+                        adjunto.getRequisito().getId(),
+                        adjunto.getAdjunto(),
+                        textFormat.formatProcedureDate(adjunto.getFechaCarga()),
+                        adjunto.getRequisito().getNombre(),
+                        adjunto.getRequisito().getDescripcion(),
+                        adjunto.getRequisito().getIndicaciones()
+                )).collect(Collectors.toList())
+        );
     }
 
     private boolean hasCompleteWholeRequirements(List<CrearSolicitudRequest.RequisitoItem> requestRequisitos, List<Requisito> requisitos) {
