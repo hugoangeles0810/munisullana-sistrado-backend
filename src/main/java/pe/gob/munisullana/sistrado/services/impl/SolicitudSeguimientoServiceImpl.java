@@ -21,7 +21,7 @@ public class SolicitudSeguimientoServiceImpl implements SolicitudSeguimientoServ
         Solicitud solicitud = solicitudSeguimiento.getSolicitud();
         String email = solicitud.getCiudadano().getEmail();
         mailBody.setEmail(email);
-        mailBody.setSubject("El estado de su solicitud ha sifo actualizado");
+        mailBody.setSubject("El estado de su solicitud ha sido actualizado");
         mailBody.setContent("Su solicitud nro: " + solicitud.getNumero() + " ha pasado a estado: " + solicitudSeguimiento.getEstado());
         mailService.send(mailBody);
     }
