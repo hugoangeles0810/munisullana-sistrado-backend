@@ -33,6 +33,7 @@ public class EventListener {
     }
 
     private void handleEvent(SolicitudCreatedEvent event) {
+        this.solicitudSeguimientoService.sendMailSolicitudCreated(event.getSolicitud());
     }
 
     private void handleEvent(SolicitudUpdatedEvent event) {
