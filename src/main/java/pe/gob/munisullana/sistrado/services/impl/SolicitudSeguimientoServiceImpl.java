@@ -25,4 +25,15 @@ public class SolicitudSeguimientoServiceImpl implements SolicitudSeguimientoServ
         mailBody.setContent("Su solicitud nro: " + solicitud.getNumero() + " ha pasado a estado: " + solicitudSeguimiento.getEstado());
         mailService.send(mailBody);
     }
+
+    @Override
+    public void sendMailSolicitudCreated(SolicitudSeguimiento solicitudSeguimiento) {
+        MailBody mailBody = new MailBody();
+        Solicitud solicitud = solicitudSeguimiento.getSolicitud();
+        String email = solicitud.getCiudadano().getEmail();
+        mailBody.setEmail(email);
+        mailBody.setSubject("Hemos recibido tu solicitud");
+        mailBody.setContent("Su solicitud nro: " + solicitud.getNumero() + " ha sido recibida, te mantendremos al tanto del proceso.");
+        mailService.send(mailBody);
+    }
 }

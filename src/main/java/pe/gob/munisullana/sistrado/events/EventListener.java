@@ -22,21 +22,25 @@ public class EventListener {
     @Subscribe
     public void onEvent(Event event) {
         log.info("New event incoming");
+        log.info("event: " + event.getClass().getSimpleName());
         if (event instanceof UserAppCreatedEvent) {
             handleEvent((UserAppCreatedEvent) event);
-        } else if (event instanceof SolicitudUpdtedEvent) {
-            handleEvent((SolicitudUpdtedEvent) event);
+        } else if (event instanceof SolicitudUpdatedEvent) {
+            handleEvent((SolicitudUpdatedEvent) event);
+        } else if (event instanceof SolicitudCreatedEvent) {
+            handleEvent((SolicitudCreatedEvent) event);
         }
     }
 
-    private void handleEvent(SolicitudUpdtedEvent event) {
-        log.info("event: " + event.getClass().getSimpleName());
+    private void handleEvent(SolicitudCreatedEvent event) {
+    }
+
+    private void handleEvent(SolicitudUpdatedEvent event) {
         this.solicitudSeguimientoService.sendMailSolicitudUpdated(event.getSolicitud());
     }
 
     private void handleEvent(UserAppCreatedEvent event) {
-        log.info("event: " + event.getClass().getSimpleName());
-        ciudadanoService.sendActivationMail(event.getCiudadano());
+        this.ciudadanoService.sendActivationMail(event.getCiudadano());
     }
 
 }

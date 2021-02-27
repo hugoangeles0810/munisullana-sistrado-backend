@@ -5,13 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import pe.gob.munisullana.sistrado.controllers.backoffice.dto.DerivarSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.backoffice.dto.ObservarSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.common.dto.ProcedureDetailResponse;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudResponse;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.ProcedureItemResponse;
 import pe.gob.munisullana.sistrado.entities.*;
-import pe.gob.munisullana.sistrado.events.SolicitudUpdtedEvent;
+import pe.gob.munisullana.sistrado.events.SolicitudCreatedEvent;
+import pe.gob.munisullana.sistrado.events.SolicitudUpdatedEvent;
 import pe.gob.munisullana.sistrado.exceptions.DomainException;
 import pe.gob.munisullana.sistrado.repositories.*;
 import pe.gob.munisullana.sistrado.services.SolicitudService;
@@ -110,6 +112,14 @@ public class SolicitudServiceImpl implements SolicitudService  {
 
         solicitudAdjuntoRepository.saveAll(solicitudAdjuntos);
 
+        SolicitudSeguimiento solicitudSeguimiento = new SolicitudSeguimiento();
+        solicitudSeguimiento.setSolicitud(solicitud);
+        solicitudSeguimiento.setEstado(solicitud.getEstado().toString());
+        solicitudSeguimiento.setDetalle("Solicitud recibida");
+        solicitudSeguimiento.setUsuarioModificacion(null);
+        solicitudSeguimiento.setFechaCreacion(timeProvider.now());
+
+        eventBus.post(new SolicitudCreatedEvent(solicitudSeguimiento));
 
         return new CrearSolicitudResponse(solicitud.getNumero(), solicitud.getEstado());
     }
@@ -123,9 +133,9 @@ public class SolicitudServiceImpl implements SolicitudService  {
     }
 
     @Override
-    public List<ProcedureItemResponse> getLoggedBackofficeProcedures() {
+    public List<ProcedureItemResponse> getLoggedBackofficeProcedures(Solicitud.Estado estado) {
         Usuario usuario = usuarioRepository.findByEmail(getUserLogged().getPrincipal().toString());
-        List<ProcedureItemResponse> procedureItemsResponse = solicitudRepository.findAllByTramite_Oficina_IdOrderByIdDesc(usuario.getOficina().getId()).stream()
+        List<ProcedureItemResponse> procedureItemsResponse = solicitudRepository.findAllByTramite_Oficina_IdOrderByIdDesc(usuario.getOficina().getId(), estado).stream()
                 .map(this::mapToProcedureItemResponse).collect(Collectors.toList());
         return procedureItemsResponse;
     }
@@ -162,7 +172,16 @@ public class SolicitudServiceImpl implements SolicitudService  {
 
     @Override
     public void observarSolicitud(ObservarSolicitudRequest request) {
-        Optional<Solicitud> solicitudOptional = solicitudRepository.findById(request.getTramiteId());
+        updateSolicituTramiteEstado(request.getTramiteId(), Solicitud.Estado.OBSERVADO, request.getObservaciones());
+    }
+
+    @Override
+    public void derivarSolicitud(DerivarSolicitudRequest request) {
+        updateSolicituTramiteEstado(request.getTramiteId(), Solicitud.Estado.EN_TRAMITE, null);
+    }
+
+    private void updateSolicituTramiteEstado(int tramiteId, Solicitud.Estado estado, String observaciones) {
+        Optional<Solicitud> solicitudOptional = solicitudRepository.findById(tramiteId);
 
         if (!solicitudOptional.isPresent()) {
             throw new DomainException("Trámite no registrado");
@@ -171,7 +190,7 @@ public class SolicitudServiceImpl implements SolicitudService  {
         Solicitud solicitud = solicitudOptional.get();
         Usuario usuario = usuarioRepository.findByEmail(getUserLogged().getPrincipal().toString());
 
-        solicitud.setEstado(Solicitud.Estado.OBSERVADO);
+        solicitud.setEstado(estado);
         solicitud.setFechaModificacion(timeProvider.now());
 
 
@@ -179,14 +198,14 @@ public class SolicitudServiceImpl implements SolicitudService  {
 
         SolicitudSeguimiento solicitudSeguimiento = new SolicitudSeguimiento();
         solicitudSeguimiento.setSolicitud(solicitud);
-        solicitudSeguimiento.setEstado(Solicitud.Estado.OBSERVADO.toString());
-        solicitudSeguimiento.setDetalle(request.getObservaciones());
+        solicitudSeguimiento.setEstado(estado.toString());
+        solicitudSeguimiento.setDetalle(observaciones);
         solicitudSeguimiento.setUsuarioModificacion(usuario);
         solicitudSeguimiento.setFechaCreacion(timeProvider.now());
 
         solicitudSeguimientoRepository.save(solicitudSeguimiento);
 
-        eventBus.post(new SolicitudUpdtedEvent(solicitudSeguimiento));
+        eventBus.post(new SolicitudUpdatedEvent(solicitudSeguimiento));
     }
 
     private boolean hasCompleteWholeRequirements(List<CrearSolicitudRequest.RequisitoItem> requestRequisitos, List<Requisito> requisitos) {

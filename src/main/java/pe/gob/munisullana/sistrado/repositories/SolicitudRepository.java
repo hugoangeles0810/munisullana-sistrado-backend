@@ -12,6 +12,6 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Integer> {
 
     List<Solicitud> findAllByCiudadano_EmailOrderByIdDesc(String email);
 
-    @Query("SELECT s FROM Solicitud s JOIN s.tramite t JOIN t.oficina o WHERE o.id = :id")
-    List<Solicitud> findAllByTramite_Oficina_IdOrderByIdDesc(int id);
+    @Query("SELECT s FROM Solicitud s JOIN s.tramite t JOIN t.oficina o WHERE o.id = :id AND s.estado = :estado")
+    List<Solicitud> findAllByTramite_Oficina_IdOrderByIdDesc(int id, Solicitud.Estado estado);
 }

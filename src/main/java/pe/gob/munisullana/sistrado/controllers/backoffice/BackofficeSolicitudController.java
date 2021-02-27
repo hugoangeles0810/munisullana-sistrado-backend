@@ -6,8 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pe.gob.munisullana.sistrado.controllers.backoffice.dto.DerivarSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.backoffice.dto.ObservarSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.ProcedureItemResponse;
+import pe.gob.munisullana.sistrado.entities.Solicitud;
 import pe.gob.munisullana.sistrado.services.SolicitudService;
 
 import java.util.List;
@@ -21,14 +23,14 @@ public class BackofficeSolicitudController {
     private SolicitudService solicitudService;
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Obtener trámites pendientes")
+    @ApiOperation(value = "Obtener trámites por estado")
     @ApiImplicitParam(name = "Authorization", paramType = "header", type = "String")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Ok"),
             @ApiResponse(code = 400, message = "Bad request")
     })
-    public ResponseEntity<List<ProcedureItemResponse>> getMyProcedures() {
-        return ResponseEntity.status(HttpStatus.OK).body(solicitudService.getLoggedBackofficeProcedures());
+    public ResponseEntity<List<ProcedureItemResponse>> getMyProcedures(@RequestParam("estado") Solicitud.Estado estado) {
+        return ResponseEntity.status(HttpStatus.OK).body(solicitudService.getLoggedBackofficeProcedures(estado));
     }
 
     @PutMapping(value = "/observar", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,6 +42,18 @@ public class BackofficeSolicitudController {
     })
     public ResponseEntity observarTramite(@RequestBody ObservarSolicitudRequest request) {
         solicitudService.observarSolicitud(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/derivar", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Derivar trámite")
+    @ApiImplicitParam(name = "Authorization", paramType = "header", type = "String")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 400, message = "Bad request")
+    })
+    public ResponseEntity derivarTramite(@RequestBody DerivarSolicitudRequest request) {
+        solicitudService.derivarSolicitud(request);
         return ResponseEntity.ok().build();
     }
 }

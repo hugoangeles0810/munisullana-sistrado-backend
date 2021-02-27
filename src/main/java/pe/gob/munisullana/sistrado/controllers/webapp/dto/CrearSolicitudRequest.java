@@ -21,7 +21,7 @@ public class CrearSolicitudRequest {
         return requisitos;
     }
 
-    public class RequisitoItem {
+    static public class RequisitoItem {
 
         @NotNull
         private Integer requisitoId;
