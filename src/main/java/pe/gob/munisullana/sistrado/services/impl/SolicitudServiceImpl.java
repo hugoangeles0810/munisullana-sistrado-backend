@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import pe.gob.munisullana.sistrado.controllers.backoffice.dto.AprobarSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.backoffice.dto.DerivarSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.backoffice.dto.ObservarSolicitudRequest;
+import pe.gob.munisullana.sistrado.controllers.backoffice.dto.RevisarSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.common.dto.ProcedureDetailResponse;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudResponse;
@@ -178,6 +180,16 @@ public class SolicitudServiceImpl implements SolicitudService  {
     @Override
     public void derivarSolicitud(DerivarSolicitudRequest request) {
         updateSolicituTramiteEstado(request.getTramiteId(), Solicitud.Estado.EN_TRAMITE, null);
+    }
+
+    @Override
+    public void revisarSolicitud(RevisarSolicitudRequest request) {
+        updateSolicituTramiteEstado(request.getTramiteId(), Solicitud.Estado.REVISADO, null);
+    }
+
+    @Override
+    public void aprobarSolicitud(AprobarSolicitudRequest request) {
+        updateSolicituTramiteEstado(request.getTramiteId(), Solicitud.Estado.APROBADO, null);
     }
 
     private void updateSolicituTramiteEstado(int tramiteId, Solicitud.Estado estado, String observaciones) {
