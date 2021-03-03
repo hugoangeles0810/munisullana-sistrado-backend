@@ -1,5 +1,8 @@
 package pe.gob.munisullana.sistrado.services.impl;
 
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.OperationContext;
+import com.microsoft.azure.storage.blob.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,8 @@ public class StorageServiceImpl implements StorageService {
 
     private Path root;
 
+    private static final String BUCKET = "sistrado-files";
+
     @PostConstruct
     public void init() {
         try {
@@ -39,9 +44,17 @@ public class StorageServiceImpl implements StorageService {
         try {
             String[] split = file.getOriginalFilename().split("\\.");
             String newName = UUID.randomUUID().toString() + "."  + split[split.length - 1];
-            Files.copy(file.getInputStream(), this.root.resolve(newName));
 
-            return new UploadAdjuntoResponse(root.toAbsolutePath() + File.separator  + file.getOriginalFilename());
+            CloudStorageAccount storageAccount = CloudStorageAccount.parse("DefaultEndpointsProtocol=https;AccountName=sistrado;AccountKey=auXaccOwS9I7j7R224zLXpztPk5w9L/NCZc1iFpVnrX0KgteC4Nxkunp/yShoYNRDkWiJ0hAdjX66TOC9KAraw==;EndpointSuffix=core.windows.net");
+            CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
+            CloudBlobContainer container = blobClient.getContainerReference(BUCKET);
+            container.createIfNotExists(BlobContainerPublicAccessType.CONTAINER, new BlobRequestOptions(), new OperationContext());
+
+            CloudBlockBlob blob = container.getBlockBlobReference(newName);
+            blob.upload(file.getInputStream(), file.getSize());
+
+            log.info("File uploaded : " + blob.getUri().toString());
+            return new UploadAdjuntoResponse(blob.getUri().toString());
         } catch (Exception e) {
             log.error("Error al subir el archivo", e);
             throw new DomainException("Ocurrió un error al subir el archivo");

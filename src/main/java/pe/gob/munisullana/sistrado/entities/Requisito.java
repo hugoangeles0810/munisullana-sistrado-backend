@@ -20,11 +20,9 @@ public class Requisito {
     private String nombre;
 
     @Column
-    @Lob
     private String descripcion;
 
     @Column
-    @Lob
     private String indicaciones;
 
     @Column

@@ -27,11 +27,9 @@ public class Tramite {
     private OficinaUnidad oficina;
 
     @Column
-    @Lob
     private String descripcion;
 
     @Column
-    @Lob
     private String indicaciones;
 
     public Integer getId() {
