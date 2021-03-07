@@ -20,11 +20,15 @@ public class ProcedureDetailResponse {
 
     private String fechaModificacion;
 
+    private String descripcion;
+
+    private String indicaciones;
+
     private List<RequisitoAdjuntoItemResponse> adjuntos;
 
     public ProcedureDetailResponse(Integer id, String numero, String ciudadano, String tramite, String tipo,
                                    String estado, String fechaCreacion, String fechaModificacion,
-                                   List<RequisitoAdjuntoItemResponse> adjuntos) {
+                                   List<RequisitoAdjuntoItemResponse> adjuntos, String descripcion, String indicaciones) {
         this.id = id;
         this.numero = numero;
         this.ciudadano = ciudadano;
@@ -34,6 +38,8 @@ public class ProcedureDetailResponse {
         this.fechaCreacion = fechaCreacion;
         this.fechaModificacion = fechaModificacion;
         this.adjuntos = adjuntos;
+        this.descripcion = descripcion;
+        this.indicaciones = indicaciones;
     }
 
     public Integer getId() {
@@ -70,6 +76,14 @@ public class ProcedureDetailResponse {
 
     public List<RequisitoAdjuntoItemResponse> getAdjuntos() {
         return adjuntos;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public String getIndicaciones() {
+        return indicaciones;
     }
 
     public static class RequisitoAdjuntoItemResponse {

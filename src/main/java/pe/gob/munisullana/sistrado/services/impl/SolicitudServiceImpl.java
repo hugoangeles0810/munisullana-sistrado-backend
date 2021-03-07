@@ -168,7 +168,9 @@ public class SolicitudServiceImpl implements SolicitudService  {
                         adjunto.getRequisito().getNombre(),
                         adjunto.getRequisito().getDescripcion(),
                         adjunto.getRequisito().getIndicaciones()
-                )).collect(Collectors.toList())
+                )).collect(Collectors.toList()),
+                solicitud.getTramite().getDescripcion(),
+                solicitud.getTramite().getIndicaciones()
         );
     }
 
