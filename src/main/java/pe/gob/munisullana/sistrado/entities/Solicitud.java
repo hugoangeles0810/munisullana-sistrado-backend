@@ -32,6 +32,9 @@ public class Solicitud {
     @Enumerated(EnumType.STRING)
     private Estado estado;
 
+    @Column(nullable = true)
+    private String observaciones;
+
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
@@ -94,5 +97,13 @@ public class Solicitud {
 
     public void setFechaModificacion(Date fechaModificacion) {
         this.fechaModificacion = fechaModificacion;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
     }
 }

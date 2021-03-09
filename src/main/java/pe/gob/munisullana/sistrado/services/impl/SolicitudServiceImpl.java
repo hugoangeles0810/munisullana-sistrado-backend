@@ -170,7 +170,8 @@ public class SolicitudServiceImpl implements SolicitudService  {
                         adjunto.getRequisito().getIndicaciones()
                 )).collect(Collectors.toList()),
                 solicitud.getTramite().getDescripcion(),
-                solicitud.getTramite().getIndicaciones()
+                solicitud.getTramite().getIndicaciones(),
+                solicitud.getObservaciones()
         );
     }
 
@@ -206,6 +207,7 @@ public class SolicitudServiceImpl implements SolicitudService  {
 
         solicitud.setEstado(estado);
         solicitud.setFechaModificacion(timeProvider.now());
+        solicitud.setObservaciones(observaciones);
 
 
         solicitudRepository.save(solicitud);

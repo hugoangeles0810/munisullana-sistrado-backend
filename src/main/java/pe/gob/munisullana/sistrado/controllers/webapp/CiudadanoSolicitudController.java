@@ -40,6 +40,17 @@ public class CiudadanoSolicitudController {
         return ResponseEntity.status(HttpStatus.CREATED).body(solicitudService.save(crearSolicitudRequest));
     }
 
+    @PutMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Subsanar solicitud de trámite")
+    @ApiImplicitParam(name = "Authorization", paramType = "header", type = "String")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Created"),
+            @ApiResponse(code = 400, message = "Bad request")
+    })
+    public ResponseEntity<Object> subsanarSolicitud(@Valid @RequestBody CrearSolicitudRequest crearSolicitudRequest) {
+        return ResponseEntity.status(HttpStatus.OK).body(solicitudService.save(crearSolicitudRequest));
+    }
+
     @PostMapping(value = "/adjunto/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Subir archivo adjunto")
     @ApiImplicitParam(name = "Authorization", paramType = "header", type = "String")
