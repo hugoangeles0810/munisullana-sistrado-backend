@@ -3,6 +3,7 @@ package pe.gob.munisullana.sistrado.entities;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Table
 @Entity
@@ -42,6 +43,9 @@ public class Solicitud {
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaModificacion;
+
+    @Transient
+    private List<SolicitudAdjunto> adjuntos;
 
     public Integer getId() {
         return id;
@@ -105,5 +109,13 @@ public class Solicitud {
 
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
+    }
+
+    public List<SolicitudAdjunto> getAdjuntos() {
+        return adjuntos;
+    }
+
+    public void setAdjuntos(List<SolicitudAdjunto> adjuntos) {
+        this.adjuntos = adjuntos;
     }
 }

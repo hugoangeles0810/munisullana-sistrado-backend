@@ -1,6 +1,8 @@
 package pe.gob.munisullana.sistrado.services.impl;
 
 import com.google.common.eventbus.EventBus;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -8,6 +10,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CreateAccountRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.LoginRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.LoginResponse;
@@ -23,7 +26,10 @@ import pe.gob.munisullana.sistrado.utils.JwtTokenUtil;
 import pe.gob.munisullana.sistrado.utils.MailBody;
 import pe.gob.munisullana.sistrado.utils.MailService;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -42,6 +48,9 @@ public class CiudadanoServiceImpl implements CiudadanoService {
     private final MailService mailService;
 
     private final VerificacionTokenRepository verificacionTokenRepository;
+
+    @Autowired
+    private Configuration configuration;
 
 
     @Value("${sistrado.app.url}")
@@ -138,16 +147,29 @@ public class CiudadanoServiceImpl implements CiudadanoService {
 
     @Override
     public void sendActivationMail(Ciudadano ciudadano) {
-        String rawToken = UUID.randomUUID().toString();
-        VerificacionToken verificacionToken = new VerificacionToken(rawToken, ciudadano, EXPIRATION_TIME_IN_MINUTES);
-        verificacionTokenRepository.save(verificacionToken);
+        try {
+            String rawToken = UUID.randomUUID().toString();
+            VerificacionToken verificacionToken = new VerificacionToken(rawToken, ciudadano, EXPIRATION_TIME_IN_MINUTES);
+            verificacionTokenRepository.save(verificacionToken);
+            String url = sistradoAppUrl + "/verificar/" + verificacionToken.getToken();
 
-        String url = sistradoAppUrl + "/verificar/" + verificacionToken.getToken();
-        MailBody mailBody = new MailBody();
-        mailBody.setEmail(ciudadano.getEmail());
-        mailBody.setSubject("Activación de cuenta");
-        mailBody.setContent("Ingrese al siguiente link para activar su cuenta: <a href=\"" + url + "\">" + url + "</a>");
-        mailService.send(mailBody);
+            configuration.setClassForTemplateLoading(getClass(), "/templates");
+
+            Template t = configuration.getTemplate("solicitud-actualizada.ftl");
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("link", url);
+            String content = FreeMarkerTemplateUtils.processTemplateIntoString(t, map);
+
+            MailBody mailBody = new MailBody();
+            mailBody.setEmail(ciudadano.getEmail());
+            mailBody.setSubject("Activación de cuenta");
+            mailBody.setContent(content);
+
+            mailService.send(mailBody);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

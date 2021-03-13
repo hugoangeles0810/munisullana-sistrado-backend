@@ -1,13 +1,8 @@
 package pe.gob.munisullana.sistrado.services;
 
-import pe.gob.munisullana.sistrado.controllers.backoffice.dto.AprobarSolicitudRequest;
-import pe.gob.munisullana.sistrado.controllers.backoffice.dto.DerivarSolicitudRequest;
-import pe.gob.munisullana.sistrado.controllers.backoffice.dto.ObservarSolicitudRequest;
-import pe.gob.munisullana.sistrado.controllers.backoffice.dto.RevisarSolicitudRequest;
+import pe.gob.munisullana.sistrado.controllers.backoffice.dto.*;
 import pe.gob.munisullana.sistrado.controllers.common.dto.ProcedureDetailResponse;
-import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudRequest;
-import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudResponse;
-import pe.gob.munisullana.sistrado.controllers.webapp.dto.ProcedureItemResponse;
+import pe.gob.munisullana.sistrado.controllers.webapp.dto.*;
 import pe.gob.munisullana.sistrado.entities.Solicitud;
 
 import java.util.List;
@@ -15,6 +10,8 @@ import java.util.List;
 public interface SolicitudService {
 
     CrearSolicitudResponse save(CrearSolicitudRequest request);
+
+    SubsanarSolicitudResponse update(SubsanarSolicitudRequest request);
 
     List<ProcedureItemResponse> getLoggedCiudadanoProcedures();
 
@@ -29,4 +26,6 @@ public interface SolicitudService {
     void revisarSolicitud(RevisarSolicitudRequest request);
 
     void aprobarSolicitud(AprobarSolicitudRequest request);
+
+    GetMetricsResponse getMetrics();
 }

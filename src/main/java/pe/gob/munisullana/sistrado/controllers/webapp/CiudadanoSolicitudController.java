@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.ProcedureItemResponse;
+import pe.gob.munisullana.sistrado.controllers.webapp.dto.SubsanarSolicitudRequest;
 import pe.gob.munisullana.sistrado.controllers.webapp.dto.UploadAdjuntoResponse;
 import pe.gob.munisullana.sistrado.services.SolicitudService;
 import pe.gob.munisullana.sistrado.services.StorageService;
@@ -47,8 +48,8 @@ public class CiudadanoSolicitudController {
             @ApiResponse(code = 200, message = "Created"),
             @ApiResponse(code = 400, message = "Bad request")
     })
-    public ResponseEntity<Object> subsanarSolicitud(@Valid @RequestBody CrearSolicitudRequest crearSolicitudRequest) {
-        return ResponseEntity.status(HttpStatus.OK).body(solicitudService.save(crearSolicitudRequest));
+    public ResponseEntity<Object> subsanarSolicitud(@Valid @RequestBody SubsanarSolicitudRequest subsanarSolicitudRequest) {
+        return ResponseEntity.status(HttpStatus.OK).body(solicitudService.update(subsanarSolicitudRequest));
     }
 
     @PostMapping(value = "/adjunto/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

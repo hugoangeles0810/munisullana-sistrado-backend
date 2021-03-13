@@ -5,14 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import pe.gob.munisullana.sistrado.controllers.backoffice.dto.AprobarSolicitudRequest;
-import pe.gob.munisullana.sistrado.controllers.backoffice.dto.DerivarSolicitudRequest;
-import pe.gob.munisullana.sistrado.controllers.backoffice.dto.ObservarSolicitudRequest;
-import pe.gob.munisullana.sistrado.controllers.backoffice.dto.RevisarSolicitudRequest;
+import pe.gob.munisullana.sistrado.controllers.backoffice.dto.*;
 import pe.gob.munisullana.sistrado.controllers.common.dto.ProcedureDetailResponse;
-import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudRequest;
-import pe.gob.munisullana.sistrado.controllers.webapp.dto.CrearSolicitudResponse;
-import pe.gob.munisullana.sistrado.controllers.webapp.dto.ProcedureItemResponse;
+import pe.gob.munisullana.sistrado.controllers.webapp.dto.*;
 import pe.gob.munisullana.sistrado.entities.*;
 import pe.gob.munisullana.sistrado.events.SolicitudCreatedEvent;
 import pe.gob.munisullana.sistrado.events.SolicitudUpdatedEvent;
@@ -23,6 +18,7 @@ import pe.gob.munisullana.sistrado.utils.TextFormat;
 import pe.gob.munisullana.sistrado.utils.TimeProvider;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -114,6 +110,14 @@ public class SolicitudServiceImpl implements SolicitudService  {
 
         solicitudAdjuntoRepository.saveAll(solicitudAdjuntos);
 
+        solicitud.setAdjuntos(solicitudAdjuntos);
+
+        solicitudRecibida(solicitud);
+
+        return new CrearSolicitudResponse(solicitud.getNumero(), solicitud.getEstado());
+    }
+
+    private void solicitudRecibida(Solicitud solicitud) {
         SolicitudSeguimiento solicitudSeguimiento = new SolicitudSeguimiento();
         solicitudSeguimiento.setSolicitud(solicitud);
         solicitudSeguimiento.setEstado(solicitud.getEstado().toString());
@@ -121,9 +125,48 @@ public class SolicitudServiceImpl implements SolicitudService  {
         solicitudSeguimiento.setUsuarioModificacion(null);
         solicitudSeguimiento.setFechaCreacion(timeProvider.now());
 
-        eventBus.post(new SolicitudCreatedEvent(solicitudSeguimiento));
+        solicitudSeguimientoRepository.save(solicitudSeguimiento);
 
-        return new CrearSolicitudResponse(solicitud.getNumero(), solicitud.getEstado());
+        eventBus.post(new SolicitudCreatedEvent(solicitudSeguimiento));
+    }
+
+    @Override
+    public SubsanarSolicitudResponse update(SubsanarSolicitudRequest request) {
+
+        Optional<Solicitud> solicitudOptional = solicitudRepository.findById(request.getId());
+        if (!solicitudOptional.isPresent()) {
+            throw new DomainException("No se encontró la solicitud");
+        }
+
+        Solicitud solicitud = solicitudOptional.get();
+
+        List<SubsanarSolicitudRequest.RequisitoItem> requisitos = request.getRequisitos();
+
+        List<SolicitudAdjunto> adjuntos = new ArrayList<>();
+
+        for (SubsanarSolicitudRequest.RequisitoItem requisito :
+                requisitos) {
+            Optional<SolicitudAdjunto> solicitudAdjunto = solicitudAdjuntoRepository.findById(requisito.getId());
+            if (solicitudAdjunto.isPresent()) {
+                SolicitudAdjunto adjunto = solicitudAdjunto.get();
+                adjunto.setAdjunto(requisito.getAdjunto());
+                adjunto.setFechaCarga(timeProvider.now());
+                solicitudAdjuntoRepository.save(adjunto);
+                adjuntos.add(adjunto);
+            }
+        }
+
+        solicitud.setEstado(Solicitud.Estado.RECIBIDO);
+        solicitud.setObservaciones(null);
+        solicitud.setFechaModificacion(timeProvider.now());
+
+        solicitudRepository.save(solicitud);
+
+        solicitud.setAdjuntos(adjuntos);
+
+        solicitudRecibida(solicitud);
+
+        return new SubsanarSolicitudResponse(solicitud.getNumero(), solicitud.getEstado());
     }
 
     @Override
@@ -195,6 +238,15 @@ public class SolicitudServiceImpl implements SolicitudService  {
         updateSolicituTramiteEstado(request.getTramiteId(), Solicitud.Estado.APROBADO, null);
     }
 
+    @Override
+    public GetMetricsResponse getMetrics() {
+        int pendientes = solicitudRepository.countByEstado(Solicitud.Estado.RECIBIDO);
+        int observadas = solicitudRepository.countByEstado(Solicitud.Estado.OBSERVADO);
+        int aprobadas = solicitudRepository.countByEstado(Solicitud.Estado.APROBADO);
+
+        return new GetMetricsResponse(pendientes, observadas, aprobadas);
+    }
+
     private void updateSolicituTramiteEstado(int tramiteId, Solicitud.Estado estado, String observaciones) {
         Optional<Solicitud> solicitudOptional = solicitudRepository.findById(tramiteId);
 
@@ -218,6 +270,8 @@ public class SolicitudServiceImpl implements SolicitudService  {
         solicitudSeguimiento.setDetalle(observaciones);
         solicitudSeguimiento.setUsuarioModificacion(usuario);
         solicitudSeguimiento.setFechaCreacion(timeProvider.now());
+
+        solicitud.setAdjuntos(solicitudAdjuntoRepository.findAllBySolicitud_IdOrderByRequisito_IdDesc(solicitud.getId()));
 
         solicitudSeguimientoRepository.save(solicitudSeguimiento);
 

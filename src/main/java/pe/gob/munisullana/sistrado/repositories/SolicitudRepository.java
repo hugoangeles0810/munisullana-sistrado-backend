@@ -14,4 +14,6 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Integer> {
 
     @Query("SELECT s FROM Solicitud s JOIN s.tramite t JOIN t.oficina o WHERE o.id = :id AND s.estado = :estado")
     List<Solicitud> findAllByTramite_Oficina_IdOrderByIdDesc(int id, Solicitud.Estado estado);
+
+    int countByEstado(Solicitud.Estado estado);
 }

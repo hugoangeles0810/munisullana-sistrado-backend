@@ -8,13 +8,13 @@ import java.util.List;
 public class SubsanarSolicitudRequest {
 
     @NotNull
-    private Integer tramiteId;
+    private Integer id;
 
     @NotEmpty
     private List<RequisitoItem> requisitos;
 
-    public Integer getTramiteId() {
-        return tramiteId;
+    public Integer getId() {
+        return id;
     }
 
     public List<RequisitoItem> getRequisitos() {
@@ -24,13 +24,13 @@ public class SubsanarSolicitudRequest {
     static public class RequisitoItem {
 
         @NotNull
-        private Integer requisitoId;
+        private Integer id;
 
         @NotBlank
         private String adjunto;
 
-        public Integer getRequisitoId() {
-            return requisitoId;
+        public Integer getId() {
+            return id;
         }
 
         public String getAdjunto() {
