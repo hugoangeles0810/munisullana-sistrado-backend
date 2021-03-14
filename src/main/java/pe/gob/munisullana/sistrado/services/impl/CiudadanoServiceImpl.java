@@ -155,7 +155,7 @@ public class CiudadanoServiceImpl implements CiudadanoService {
 
             configuration.setClassForTemplateLoading(getClass(), "/templates");
 
-            Template t = configuration.getTemplate("solicitud-actualizada.ftl");
+            Template t = configuration.getTemplate("ciudadano-creado.ftl");
 
             Map<String, Object> map = new HashMap<>();
             map.put("link", url);
